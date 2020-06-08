@@ -7,7 +7,7 @@ import IconService from "icon-sdk-js";
 
 const { IconBuilder, IconAmount, IconConverter } = IconService;
 
-const magic = new Magic("pk_test_4D84A95497B1CF87", {
+const magic = new Magic("pk_test_AC899A3CF7AD4511", {
   extensions: {
     icon: new IconExtension({
       rpcUrl: "https://bicon.net.solidwallet.io/api/v3"
