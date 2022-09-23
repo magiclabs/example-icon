@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
-import { content } from './data/contract'
+import { content } from "./data/contract";
 import { Magic } from "magic-sdk";
 import { IconExtension } from "@magic-ext/icon";
 import IconService from "icon-sdk-js";
 
 const { IconBuilder, IconAmount, IconConverter } = IconService;
 
-const magic = new Magic("pk_live_391E344C33F73CF5", {
+const magic = new Magic("pk_live_FC06C7D601338A6E", {
   extensions: {
     icon: new IconExtension({
-      rpcUrl: "https://bicon.net.solidwallet.io/api/v3"
-    })
-  }
+      rpcUrl: "https://bicon.net.solidwallet.io/api/v3",
+    }),
+  },
 });
 
 export default function App() {
@@ -25,11 +25,12 @@ export default function App() {
   const [userMetadata, setUserMetadata] = useState({});
   const [txHash, setTxHash] = useState("");
   const [messageTxHash, setMessageTxHash] = useState("");
-  const [massageDestinationAddress, setMassageDestinationAddress] = useState("");
+  const [massageDestinationAddress, setMassageDestinationAddress] =
+    useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    magic.user.isLoggedIn().then(async magicIsLoggedIn => {
+    magic.user.isLoggedIn().then(async (magicIsLoggedIn) => {
       setIsLoggedIn(magicIsLoggedIn);
       if (magicIsLoggedIn) {
         const publicAddress = await magic.icon.getAccount();
@@ -73,23 +74,23 @@ export default function App() {
   const handlerMessageTransaction = async () => {
     const metadata = await magic.user.getMetadata();
     const txObj = new IconBuilder.MessageTransactionBuilder()
-        .from(metadata.publicAddress)
-        .to(massageDestinationAddress)
-        .stepLimit(IconConverter.toBigNumber(1000000).toString())
-        .nid(IconConverter.toBigNumber(3).toString())
-        .nonce(IconConverter.toBigNumber(1).toString())
-        .version(IconConverter.toBigNumber(3).toString())
-        .timestamp((new Date()).getTime() * 1000)
-        .data(IconConverter.fromUtf8(message))
-        .build()
+      .from(metadata.publicAddress)
+      .to(massageDestinationAddress)
+      .stepLimit(IconConverter.toBigNumber(1000000).toString())
+      .nid(IconConverter.toBigNumber(3).toString())
+      .nonce(IconConverter.toBigNumber(1).toString())
+      .version(IconConverter.toBigNumber(3).toString())
+      .timestamp(new Date().getTime() * 1000)
+      .data(IconConverter.fromUtf8(message))
+      .build();
 
-    console.log('txObj', txObj);
+    console.log("txObj", txObj);
 
     const txhash = await magic.icon.sendTransaction(txObj);
 
     setMessageTxHash(txhash);
 
-    console.log('transaction result', txhash);
+    console.log("transaction result", txhash);
   };
 
   const handleDeployContract = async () => {
@@ -98,53 +99,51 @@ export default function App() {
     const { DeployTransactionBuilder } = IconBuilder;
 
     const txObj = new DeployTransactionBuilder()
-        .from(metadata.publicAddress)
-        .to('cx0000000000000000000000000000000000000000')
-        .stepLimit(IconConverter.toBigNumber(2100000000).toString())
-        .nid(IconConverter.toBigNumber(3).toString())
-        .nonce(IconConverter.toBigNumber(1).toString())
-        .version(IconConverter.toBigNumber(3).toString())
-        .timestamp((new Date()).getTime() * 1000)
-        .contentType('application/zip')
-        .content(`0x${content}`)
-        .params({
-          initialSupply: IconConverter.toHex('100000000000'),
-          decimals: IconConverter.toHex(18),
-          name: 'StandardToken',
-          symbol: 'ST',
-        })
-        .build();
+      .from(metadata.publicAddress)
+      .to("cx0000000000000000000000000000000000000000")
+      .stepLimit(IconConverter.toBigNumber(2100000000).toString())
+      .nid(IconConverter.toBigNumber(3).toString())
+      .nonce(IconConverter.toBigNumber(1).toString())
+      .version(IconConverter.toBigNumber(3).toString())
+      .timestamp(new Date().getTime() * 1000)
+      .contentType("application/zip")
+      .content(`0x${content}`)
+      .params({
+        initialSupply: IconConverter.toHex("100000000000"),
+        decimals: IconConverter.toHex(18),
+        name: "StandardToken",
+        symbol: "ST",
+      })
+      .build();
 
     const txhash = await magic.icon.sendTransaction(txObj);
 
     setContractTxHash(txhash);
 
-    console.log('transaction result', txhash);
-
+    console.log("transaction result", txhash);
   };
 
   const handleContractCall = async () => {
     const metadata = await magic.user.getMetadata();
 
     const txObj = new IconBuilder.CallTransactionBuilder()
-        .from(metadata.publicAddress)
-        .to('cx568bb567298fbc60091c24080be20c1ce7751529')
-        .stepLimit(IconConverter.toBigNumber('2000000').toString())
-        .nid(IconConverter.toBigNumber('3').toString())
-        .nonce(IconConverter.toBigNumber('1').toString())
-        .version(IconConverter.toBigNumber('3').toString())
-        .timestamp((new Date()).getTime() * 1000)
-        .method('hello')
-        .params({})
-        .build();
+      .from(metadata.publicAddress)
+      .to("cx568bb567298fbc60091c24080be20c1ce7751529")
+      .stepLimit(IconConverter.toBigNumber("2000000").toString())
+      .nid(IconConverter.toBigNumber("3").toString())
+      .nonce(IconConverter.toBigNumber("1").toString())
+      .version(IconConverter.toBigNumber("3").toString())
+      .timestamp(new Date().getTime() * 1000)
+      .method("hello")
+      .params({})
+      .build();
 
-    console.log('txObj', txObj);
+    console.log("txObj", txObj);
 
     const txhash = await magic.icon.sendTransaction(txObj);
 
-    console.log('transaction result', txhash);
-    window.open(`https://bicon.tracker.solidwallet.io/transaction/${txhash}`)
-
+    console.log("transaction result", txhash);
+    window.open(`https://bicon.tracker.solidwallet.io/transaction/${txhash}`);
   };
 
   return (
@@ -157,7 +156,7 @@ export default function App() {
             name="email"
             required="required"
             placeholder="Enter your email"
-            onChange={event => {
+            onChange={(event) => {
               setEmail(event.target.value);
             }}
           />
@@ -203,7 +202,7 @@ export default function App() {
               className="full-width"
               required="required"
               placeholder="Destination address"
-              onChange={event => {
+              onChange={(event) => {
                 setDestinationAddress(event.target.value);
               }}
             />
@@ -213,7 +212,7 @@ export default function App() {
               className="full-width"
               required="required"
               placeholder="Amount in ICX"
-              onChange={event => {
+              onChange={(event) => {
                 setSendICXAmount(event.target.value);
               }}
             />
@@ -224,39 +223,39 @@ export default function App() {
           <div className="container">
             <h1>Send Message Transaction</h1>
             {messageTxHash ? (
-                <div>
-                  <div>Send message transaction success</div>
-                  <div className="info">
-                    <a
-                        href={`https://bicon.tracker.solidwallet.io/transaction/${messageTxHash}`}
-                        target="_blank"
-                    >
-                      {messageTxHash}
-                    </a>
-                  </div>
+              <div>
+                <div>Send message transaction success</div>
+                <div className="info">
+                  <a
+                    href={`https://bicon.tracker.solidwallet.io/transaction/${messageTxHash}`}
+                    target="_blank"
+                  >
+                    {messageTxHash}
+                  </a>
                 </div>
+              </div>
             ) : (
-                <div />
+              <div />
             )}
             <input
-                type="text"
-                name="destination"
-                className="full-width"
-                required="required"
-                placeholder="Destination address"
-                onChange={event => {
-                  setMassageDestinationAddress(event.target.value);
-                }}
+              type="text"
+              name="destination"
+              className="full-width"
+              required="required"
+              placeholder="Destination address"
+              onChange={(event) => {
+                setMassageDestinationAddress(event.target.value);
+              }}
             />
             <input
-                type="text"
-                name="amount"
-                className="full-width"
-                required="required"
-                placeholder="Message"
-                onChange={event => {
-                  setMessage(event.target.value);
-                }}
+              type="text"
+              name="amount"
+              className="full-width"
+              required="required"
+              placeholder="Message"
+              onChange={(event) => {
+                setMessage(event.target.value);
+              }}
             />
             <button id="btn-send-txn" onClick={handlerMessageTransaction}>
               Send Message Transaction
