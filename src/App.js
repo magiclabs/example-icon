@@ -7,7 +7,7 @@ import IconService, { HttpProvider } from "icon-sdk-js";
 
 const { IconBuilder, IconAmount, IconConverter } = IconService;
 
-const magic = new Magic("pk_live_FC06C7D601338A6E", {
+const magic = new Magic("pk_live_8D40A7E251F283ED", {
   extensions: {
     icon: new IconExtension({
       rpcUrl: "https://lisbon.net.solidwallet.io/api/v3",
