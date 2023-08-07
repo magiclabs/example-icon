@@ -3,14 +3,14 @@ import "./styles.css";
 import { content } from "./data/contract";
 import { Magic } from "magic-sdk";
 import { IconExtension } from "@magic-ext/icon";
-import IconService from "icon-sdk-js";
+import IconService, { HttpProvider } from "icon-sdk-js";
 
 const { IconBuilder, IconAmount, IconConverter } = IconService;
 
-const magic = new Magic("pk_live_FC06C7D601338A6E", {
+const magic = new Magic("pk_live_8D40A7E251F283ED", {
   extensions: {
     icon: new IconExtension({
-      rpcUrl: "https://bicon.net.solidwallet.io/api/v3",
+      rpcUrl: "https://lisbon.net.solidwallet.io/api/v3",
     }),
   },
 });
@@ -18,6 +18,7 @@ const magic = new Magic("pk_live_FC06C7D601338A6E", {
 export default function App() {
   const [email, setEmail] = useState("");
   const [publicAddress, setPublicAddress] = useState("");
+  const [balance, setBalance] = useState('0');
   const [destinationAddress, setDestinationAddress] = useState("");
   const [sendICXAmount, setSendICXAmount] = useState(0);
   const [contractTxHash, setContractTxHash] = useState("");
@@ -34,14 +35,28 @@ export default function App() {
       setIsLoggedIn(magicIsLoggedIn);
       if (magicIsLoggedIn) {
         const publicAddress = await magic.icon.getAccount();
+        getBalance(publicAddress);
         setPublicAddress(publicAddress);
         setUserMetadata(await magic.user.getMetadata());
       }
     });
   }, [isLoggedIn]);
 
+  const getBalance = async (address) => {
+    const iconService = getIconService();
+    const bal = await iconService.getBalance(address).execute();
+    const formattedBalance = bal.toString() / 1000000000000000000;
+    console.log(formattedBalance);
+    setBalance(formattedBalance);
+  }
+
+  const getIconService = () => {
+    const httpProvider = new HttpProvider('https://lisbon.net.solidwallet.io/api/v3');
+    return new IconService(httpProvider);
+  }
+
   const login = async () => {
-    await magic.auth.loginWithMagicLink({ email });
+    await magic.auth.loginWithEmailOTP({ email });
     setIsLoggedIn(true);
   };
 
@@ -58,7 +73,7 @@ export default function App() {
       .to(destinationAddress)
       .value(IconAmount.of(sendICXAmount, IconAmount.Unit.ICX).toLoop())
       .stepLimit(IconConverter.toBigNumber(100000))
-      .nid(IconConverter.toBigNumber(3))
+      .nid(IconConverter.toBigNumber(2))
       .nonce(IconConverter.toBigNumber(1))
       .version(IconConverter.toBigNumber(3))
       .timestamp(new Date().getTime() * 1000)
@@ -77,7 +92,7 @@ export default function App() {
       .from(metadata.publicAddress)
       .to(massageDestinationAddress)
       .stepLimit(IconConverter.toBigNumber(1000000).toString())
-      .nid(IconConverter.toBigNumber(3).toString())
+      .nid(IconConverter.toBigNumber(2).toString())
       .nonce(IconConverter.toBigNumber(1).toString())
       .version(IconConverter.toBigNumber(3).toString())
       .timestamp(new Date().getTime() * 1000)
@@ -102,7 +117,7 @@ export default function App() {
       .from(metadata.publicAddress)
       .to("cx0000000000000000000000000000000000000000")
       .stepLimit(IconConverter.toBigNumber(2100000000).toString())
-      .nid(IconConverter.toBigNumber(3).toString())
+      .nid(IconConverter.toBigNumber(2).toString())
       .nonce(IconConverter.toBigNumber(1).toString())
       .version(IconConverter.toBigNumber(3).toString())
       .timestamp(new Date().getTime() * 1000)
@@ -130,7 +145,7 @@ export default function App() {
       .from(metadata.publicAddress)
       .to("cx568bb567298fbc60091c24080be20c1ce7751529")
       .stepLimit(IconConverter.toBigNumber("2000000").toString())
-      .nid(IconConverter.toBigNumber("3").toString())
+      .nid(IconConverter.toBigNumber("2").toString())
       .nonce(IconConverter.toBigNumber("1").toString())
       .version(IconConverter.toBigNumber("3").toString())
       .timestamp(new Date().getTime() * 1000)
@@ -143,7 +158,7 @@ export default function App() {
     const txhash = await magic.icon.sendTransaction(txObj);
 
     console.log("transaction result", txhash);
-    window.open(`https://bicon.tracker.solidwallet.io/transaction/${txhash}`);
+    window.open(`https://lisbon.tracker.solidwallet.io/transaction/${txhash}`);
   };
 
   return (
@@ -172,12 +187,28 @@ export default function App() {
             <h1>Icon address</h1>
             <div className="info">
               <a
-                href={`https://bicon.tracker.solidwallet.io/address/${publicAddress}`}
+                href={`https://lisbon.tracker.solidwallet.io/address/${publicAddress}`}
                 target="_blank"
               >
                 {publicAddress}
               </a>
             </div>
+          </div>
+          <div className="container">
+            <h1>Faucet</h1>
+            <div className="info">
+              <a
+                href={`https://faucet.iconosphere.io/`}
+                target="_blank"
+              >
+                Link
+              </a>
+            </div>
+          </div>
+          
+          <div className="container">
+            <h1>Balance</h1>
+            <div className="info">{balance} ICX</div>
           </div>
           <div className="container">
             <h1>Send Transaction</h1>
@@ -186,7 +217,7 @@ export default function App() {
                 <div>Send transaction success</div>
                 <div className="info">
                   <a
-                    href={`https://bicon.tracker.solidwallet.io/transaction/${txHash}`}
+                    href={`https://lisbon.tracker.solidwallet.io/transaction/${txHash}`}
                     target="_blank"
                   >
                     {txHash}
@@ -227,7 +258,7 @@ export default function App() {
                 <div>Send message transaction success</div>
                 <div className="info">
                   <a
-                    href={`https://bicon.tracker.solidwallet.io/transaction/${messageTxHash}`}
+                    href={`https://lisbon.tracker.solidwallet.io/transaction/${messageTxHash}`}
                     target="_blank"
                   >
                     {messageTxHash}
@@ -265,7 +296,7 @@ export default function App() {
             <h1>Smart Contract</h1>
             <div className="info">
               <a
-                href={`https://bicon.tracker.solidwallet.io/transaction/${contractTxHash}`}
+                href={`https://lisbon.tracker.solidwallet.io/transaction/${contractTxHash}`}
                 target="_blank"
               >
                 {contractTxHash}
