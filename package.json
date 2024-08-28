@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "typescript": "3.8.3",
-    "webpack": "4.29.6"
+    "webpack": "5.94.0"
   },
   "scripts": {
     "start": "react-scripts start",
